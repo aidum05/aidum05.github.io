@@ -1,2 +1,2 @@
 # aidum05.github.io
-collection of projects
+ collection of svelte projects
