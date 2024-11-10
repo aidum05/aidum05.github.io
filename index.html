@@ -13,7 +13,7 @@
 
             // Make a POST request to the Flask backend
             try {
-                const response = await fetch("https://aidum05-github-io.onrender.com", {
+                const response = await fetch("https://aidum05-github-io.onrender.com/api/calculate", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ molecular_weight: molecularWeight, concentration: concentration })
