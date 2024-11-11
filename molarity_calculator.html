@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solution Preparation Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script>
+        function showFields() {
+            const calculationType = document.getElementById("calculationType").value;
+            document.querySelectorAll(".input-section").forEach(section => section.style.display = "none");
+            
+            if (calculationType === "molarity") {
+                document.getElementById("molarityFields").style.display = "block";
+            } else if (calculationType === "dilution") {
+                document.getElementById("dilutionFields").style.display = "block";
+            } else if (calculationType === "massRequired") {
+                document.getElementById("massRequiredFields").style.display = "block";
+            } else if (calculationType === "volumeRequired") {
+                document.getElementById("volumeRequiredFields").style.display = "block";
+            }
+        }
+
+        function calculate() {
+            const calculationType = document.getElementById("calculationType").value;
+            let result;
+
+            if (calculationType === "molarity") {
+                // Molarity Calculation
+                const moles = parseFloat(document.getElementById("moles").value);
+                const volume = parseFloat(document.getElementById("volume").value);
+                const molUnit = document.getElementById("moleUnit").value;
+                const volUnit = document.getElementById("volumeUnit").value;
+                
+                if (isNaN(moles) || isNaN(volume) || volume === 0) {
+                    document.getElementById("result").textContent = "Invalid input";
+                    return;
+                }
+
+                let molesInMol = moles;
+                if (molUnit === "mmol") molesInMol = moles / 1000;
+                if (molUnit === "µmol") molesInMol = moles / 1e6;
+
+                let volumeInL = volume;
+                if (volUnit === "mL") volumeInL = volume / 1000;
+                if (volUnit === "µL") volumeInL = volume / 1e6;
+
+                result = (molesInMol / volumeInL).toFixed(3) + " M";
+
+            } else if (calculationType === "dilution") {
+                // Dilution Calculation
+                const c1 = parseFloat(document.getElementById("initialConcentration").value);
+                const c2 = parseFloat(document.getElementById("finalConcentration").value);
+                const v2 = parseFloat(document.getElementById("finalVolume").value);
+
+                if (isNaN(c1) || isNaN(c2) || isNaN(v2) || c2 === 0) {
+                    document.getElementById("result").textContent = "Invalid input";
+                    return;
+                }
+
+                result = ((c2 * v2) / c1).toFixed(3) + " L of stock solution";
+
+            } else if (calculationType === "massRequired") {
+                // Mass Required Calculation
+                const molarity = parseFloat(document.getElementById("desiredMolarity").value);
+                const volume = parseFloat(document.getElementById("solutionVolume").value);
+                const molarMass = parseFloat(document.getElementById("molarMass").value);
+
+                if (isNaN(molarity) || isNaN(volume) || isNaN(molarMass)) {
+                    document.getElementById("result").textContent = "Invalid input";
+                    return;
+                }
+
+                result = (molarity * volume * molarMass).toFixed(3) + " g";
+
+            } else if (calculationType === "volumeRequired") {
+                // Volume Required Calculation
+                const c1 = parseFloat(document.getElementById("initialConcentration2").value);
+                const c2 = parseFloat(document.getElementById("finalConcentration2").value);
+                const v1 = parseFloat(document.getElementById("volume1").value);
+
+                if (isNaN(c1) || isNaN(c2) || isNaN(v1) || c1 === 0) {
+                    document.getElementById("result").textContent = "Invalid input";
+                    return;
+                }
+
+                const diluentVolume = (v1 * (c1 - c2)) / c2;
+                result = diluentVolume.toFixed(3) + " L of diluent";
+            }
+
+            document.getElementById("result").textContent = result;
+        }
+    </script>
+</head>
+<body class="bg-gray-100">
+
+<div class="max-w-lg mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg">
+    <h1 class="text-2xl font-bold mb-6 text-center">Solution Preparation Calculator</h1>
+
+    <div class="mb-6">
+        <label for="calculationType" class="block text-gray-700 font-semibold mb-2">Select Calculation Type</label>
+        <select id="calculationType" onchange="showFields()" class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">-- Select --</option>
+            <option value="molarity">Calculate Molarity</option>
+            <option value="dilution">Dilution of a Stock Solution</option>
+            <option value="massRequired">Mass Required for Desired Concentration</option>
+            <option value="volumeRequired">Volume Required to Dilute</option>
+        </select>
+    </div>
+
+    <!-- Molarity Fields -->
+    <div id="molarityFields" class="input-section mb-6 hidden">
+        <label class="block text-gray-700 font-semibold mb-2">Moles of Solute</label>
+        <div class="flex">
+            <input type="number" id="moles" class="flex-grow border border-gray-300 rounded-md px-4 py-2">
+            <select id="moleUnit" class="ml-2 border border-gray-300 rounded-md px-2 py-2">
+                <option value="mol">mol</option>
+                <option value="mmol">mmol</option>
+                <option value="µmol">µmol</option>
+            </select>
+        </div>
+        <label class="block text-gray-700 font-semibold mt-4 mb-2">Volume of Solution</label>
+        <div class="flex">
+            <input type="number" id="volume" class="flex-grow border border-gray-300 rounded-md px-4 py-2">
+            <select id="volumeUnit" class="ml-2 border border-gray-300 rounded-md px-2 py-2">
+                <option value="L">L</option>
+                <option value="mL">mL</option>
+                <option value="µL">µL</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Dilution Fields -->
+    <div id="dilutionFields" class="input-section mb-6 hidden">
+        <label class="block text-gray-700 font-semibold mb-2">Initial Concentration</label>
+        <input type="number" id="initialConcentration" class="w-full border border-gray-300 rounded-md px-4 py-2">
+        <label class="block text-gray-700 font-semibold mt-4 mb-2">Final Concentration</label>
+        <input type="number" id="finalConcentration" class="w-full border border-gray-300 rounded-md px-4 py-2">
+        <label class="block text-gray-700 font-semibold mt-4 mb-2">Final Volume (L)</label>
+        <input type="number" id="finalVolume" class="w-full border border-gray-300 rounded-md px-4 py-2">
+    </div>
+
+    <!-- Mass Required Fields -->
+    <div id="massRequiredFields" class="input-section mb-6 hidden">
+        <label class="block text-gray-700 font-semibold mb-2">Desired Molarity</label>
+        <input type="number" id="desiredMolarity" class="w-full border border-gray-300 rounded-md px-4 py-2">
+        <label class="block text-gray-700 font-semibold mt-4 mb-2">Solution Volume (L)</label>
+        <input type="number" id="solutionVolume" class="w-full border border-gray-300 rounded-md px-4 py-2">
+        <label class="block text-gray-700 font-semibold mt-4 mb-2">Molar Mass (g/mol)</label>
+        <input type="number" id="molarMass" class="w-full border border-gray-300 rounded-md px-4 py-2">
+    </div>
+
+    <!-- Volume Required Fields -->
+    <div id="volumeRequiredFields" class="input-section mb-6 hidden">
+        <label class="block text-gray-700 font-semibold mb-2">Initial Concentration</label>
+        <input type="number" id="initialConcentration2" class="w-full border border-gray-300 rounded-md px-4 py-2">
+        <label class="block text-gray-700 font-semibold mt-4 mb-2">Final Concentration</label>
+        <input type="number" id="finalConcentration2" class="w-full border border-gray-300 rounded-md px-4 py-2">
+        <label class="block text-gray-700 font-semibold mt-4 mb-2">Volume to be Diluted (L)</label>
+        <input type="number" id="volume1" class="w-full border border-gray-300 rounded-md px-4 py-2">
+    </div>
+
+    <button onclick="calculate()" class="w-full bg-blue-500 text-white font-bold py-3 rounded-md hover:bg-blue-600">Calculate</button>
+    <div class="bg-gray-50 p-4 rounded-md text-center mt-4">
+        <p class="text-gray-700 font-semibold">Result:</p>
+        <p id="result" class="text-3xl font-bold text-blue-500 mt-2">0</p>
+    </div>
+</div>
+
+</body>
+</html>
