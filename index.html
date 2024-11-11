@@ -6,22 +6,19 @@
     <title>Laboratory Calculators</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100">
-
-<div class="max-w-lg mx-auto mt-20 p-10 bg-white rounded-lg shadow-lg text-center">
-    <h1 class="text-3xl font-bold mb-5">Laboratory Calculators</h1>
-    <p class="mb-8 text-gray-600">Choose a calculator to perform your lab calculations.</p>
-
-    <!-- Link to Molarity Calculator -->
-    <a href="molarity_calculator.html" class="w-full block mb-4 bg-blue-500 text-white font-bold py-3 rounded-md hover:bg-blue-600">
-        Molarity Calculator
-    </a>
-
-    <!-- Link to Dilution Volume Calculator -->
-    <a href="dilution_calculator.html" class="w-full block bg-green-500 text-white font-bold py-3 rounded-md hover:bg-green-600">
-        Dilution Volume Calculator
-    </a>
-</div>
-
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="container mx-auto p-8 text-center">
+        <h1 class="text-4xl font-bold mb-8">Welcome to Laboratory Calculators</h1>
+        <p class="mb-6 text-lg text-gray-700">Choose a calculator below to begin.</p>
+        
+        <div class="flex flex-col sm:flex-row justify-center gap-6">
+            <a href="concentration_calculators.html" class="bg-blue-500 text-white px-6 py-4 rounded-lg shadow hover:bg-blue-600 transition">
+                Concentration Calculators
+            </a>
+            <a href="dilution_calculator.html" class="bg-green-500 text-white px-6 py-4 rounded-lg shadow hover:bg-green-600 transition">
+                Dilution Calculator
+            </a>
+        </div>
+    </div>
 </body>
 </html>
