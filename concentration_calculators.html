@@ -6,12 +6,292 @@
     <title>Concentration Calculators</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100">
-    <div class="container mx-auto p-8">
-        <h2 class="text-3xl font-bold mb-6 text-center">Concentration Calculators</h2>
-        
-        <!-- Add your additional calculators here if needed -->
+<body class="bg-gray-100 p-6">
 
+    <div class="flex space-x-8">
+        <!-- Toggleable Receipt Section -->
+        <div class="w-1/3 p-4 bg-gray-50 rounded-md shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Calculation Receipt</h2>
+            <div id="receipt" class="space-y-2 text-sm text-gray-700"></div>
+        </div>
+
+        <div class="w-2/3">
+            <!-- Receipt Toggle Switch -->
+            <div class="flex items-center mb-4">
+                <label for="toggleReceipt" class="mr-3 font-semibold">Show Receipt</label>
+                <label class="switch">
+                    <input type="checkbox" id="toggleReceipt" onclick="toggleReceipt()">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+    <!-- Molarity Calculation Type Selector -->
+    <div class="mb-4">
+        <label for="calcType" class="block font-semibold">Calculation Type:</label>
+        <select id="calcType" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
+            <option value="">Please select</option>
+            <option value="molarity">Calculate Molarity</option>
+            <option value="solute_mass">Calculate Mass of Solute</option>
+            <option value="dilution">Dilution of Stock Solution</option>
+        </select>
     </div>
+
+    <!-- Fields for Molarity Calculation -->
+    <div class="space-y-4 max-w-md mx-auto p-4 bg-white shadow-md rounded-md">
+        <label class="block">
+            <span class="text-gray-700">Mass</span>
+            <div class="flex items-center space-x-2">
+                <input type="number" id="mass" class="w-full border rounded-md p-2" placeholder="Enter mass">
+                <select id="massUnit" class="border rounded-md p-2">
+                    <option value="1">g</option>
+                    <option value="1e-3">mg</option>
+                    <option value="1e-6">µg</option>
+                    <option value="1e-9">ng</option>
+                </select>
+            </div>
+        </label>
+    
+        <label class="block">
+            <span class="text-gray-700">Concentration (mol/L)</span>
+            <input type="number" id="concentration" class="w-full border rounded-md p-2" placeholder="Enter concentration">
+        </label>
+    
+        <label class="block">
+            <span class="text-gray-700">Volume</span>
+            <div class="flex items-center space-x-2">
+                <input type="number" id="volume" class="w-full border rounded-md p-2" placeholder="Enter volume">
+                <select id="volumeUnit" class="border rounded-md p-2">
+                    <option value="1">L</option>
+                    <option value="1e-3">mL</option>
+                    <option value="1e-6">µL</option>
+                    <option value="1e-9">nL</option>
+                </select>
+            </div>
+        </label>
+    
+        <label class="block">
+            <span class="text-gray-700">Molecular Weight (g/mol)</span>
+            <input type="number" id="molWeight" class="w-full border rounded-md p-2" placeholder="Enter molecular weight">
+        </label>
+    </div>
+          
+    <!-- Fields for Solute Mass Calculation -->
+    <div id="soluteMassFields" class="hidden">
+        <div class="mb-4">
+            <label for="desiredMolarity" class="block font-semibold">Desired Molarity:</label>
+            <div class="flex">
+                <input type="number" id="desiredMolarity" class="mt-1 block w-full p-2 border border-gray-300 rounded-l-md" placeholder="Enter molarity">
+                <select id="molarityUnit" class="p-2 border-t border-b border-r border-gray-300 rounded-r-md">
+                    <option value="M">M</option>
+                    <option value="mM">mM</option>
+                    <option value="µM">µM</option>
+                    <option value="nM">nM</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="solutionVolume" class="block font-semibold">Volume of Solution:</label>
+            <div class="flex">
+                <input type="number" id="solutionVolume" class="mt-1 block w-full p-2 border border-gray-300 rounded-l-md" placeholder="Enter volume">
+                <select id="solutionVolumeUnit" class="p-2 border-t border-b border-r border-gray-300 rounded-r-md">
+                    <option value="L">L</option>
+                    <option value="mL">mL</option>
+                    <option value="µL">µL</option>
+                    <option value="nL">nL</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="calculateSoluteMass()" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md mt-4">Calculate Solute Mass</button>
+    </div>
+
+    <!-- Fields for Dilution Calculation -->
+    <div id="dilutionFields" class="hidden">
+        <div class="mb-4">
+            <label for="initialConcentration" class="block font-semibold">Initial Concentration:</label>
+            <div class="flex">
+                <input type="number" id="initialConcentration" class="mt-1 block w-full p-2 border border-gray-300 rounded-l-md" placeholder="Enter concentration">
+                <select id="initialConcentrationUnit" class="p-2 border-t border-b border-r border-gray-300 rounded-r-md">
+                    <option value="M">M</option>
+                    <option value="mM">mM</option>
+                    <option value="µM">µM</option>
+                    <option value="nM">nM</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="finalConcentration" class="block font-semibold">Final Concentration:</label>
+            <div class="flex">
+                <input type="number" id="finalConcentration" class="mt-1 block w-full p-2 border border-gray-300 rounded-l-md" placeholder="Enter concentration">
+                <select id="finalConcentrationUnit" class="p-2 border-t border-b border-r border-gray-300 rounded-r-md">
+                    <option value="M">M</option>
+                    <option value="mM">mM</option>
+                    <option value="µM">µM</option>
+                    <option value="nM">nM</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="calculateDilutionVolume()" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md mt-4">Calculate Dilution Volume</button>
+    </div>
+
+    <!-- Result Display -->
+    <div id="result" class="mt-4 p-4 bg-gray-200 rounded-md">
+        <strong>Result:</strong> <span id="resultOutput">0</span>
+    </div>
+</div>
+
+    <!-- JavaScript -->
+    <script>
+        // Toggle Receipt Display
+        function toggleReceipt() {
+            const receiptSection = document.getElementById("receipt-section");
+            receiptSection.classList.toggle("hidden");
+        }
+        function updateReceipt() {
+    const mass = document.getElementById('mass').value || "N/A";
+    const concentration = document.getElementById('concentration').value || "N/A";
+    const volume = document.getElementById('volume').value || "N/A";
+    const molWeight = document.getElementById('molWeight').value || "N/A";
+    
+    const massUnitText = document.getElementById('massUnit').options[document.getElementById('massUnit').selectedIndex].text;
+    const volumeUnitText = document.getElementById('volumeUnit').options[document.getElementById('volumeUnit').selectedIndex].text;
+    
+    // Clear previous receipt
+    const receipt = document.getElementById('receipt');
+    receipt.innerHTML = ""; 
+    
+    // Add receipt entries
+    receipt.innerHTML += `<p>Mass: ${mass} ${massUnitText}</p>`;
+    receipt.innerHTML += `<p>Concentration: ${concentration} mol/L</p>`;
+    receipt.innerHTML += `<p>Volume: ${volume} ${volumeUnitText}</p>`;
+    receipt.innerHTML += `<p>Molecular Weight: ${molWeight} g/mol</p>`;
+}
+
+// Call updateReceipt after each calculation
+function calculateMolarity() {
+    // (Previous calculateMolarity function code)
+
+    // After performing calculation, update receipt
+    updateReceipt();
+}
+    
+        // Molarity Calculation Function
+        function calculateMolarity() {
+    // Get input values
+    const mass = parseFloat(document.getElementById('mass').value) || null;
+    const concentration = parseFloat(document.getElementById('concentration').value) || null;
+    const volume = parseFloat(document.getElementById('volume').value) || null;
+    const molWeight = parseFloat(document.getElementById('molWeight').value) || null;
+
+    // Get selected units and convert them to base units (grams, liters)
+    const massUnit = parseFloat(document.getElementById('massUnit').value);
+    const volumeUnit = parseFloat(document.getElementById('volumeUnit').value);
+
+    // Adjust input values to base units
+    const adjustedMass = mass ? mass * massUnit : null;
+    const adjustedVolume = volume ? volume * volumeUnit : null;
+
+    // Determine missing value and perform the calculation
+    if (!mass && concentration && volume && molWeight) {
+        // Calculate Mass
+        document.getElementById('mass').value = ((concentration * adjustedVolume * molWeight) / massUnit).toFixed(4);
+    } else if (mass && !concentration && volume && molWeight) {
+        // Calculate Concentration
+        document.getElementById('concentration').value = (adjustedMass / (adjustedVolume * molWeight)).toFixed(4);
+    } else if (mass && concentration && !volume && molWeight) {
+        // Calculate Volume
+        document.getElementById('volume').value = ((adjustedMass / (concentration * molWeight)) / volumeUnit).toFixed(4);
+    } else if (mass && concentration && volume && !molWeight) {
+        // Calculate Molecular Weight
+        document.getElementById('molWeight').value = (adjustedMass / (concentration * adjustedVolume)).toFixed(4);
+    } else {
+        alert("Please fill in all fields except the one you want to calculate.");
+    }
+}
+    
+        // Toggle Calculator Fields Based on Selection
+        document.getElementById('calcType').addEventListener('change', function () {
+            const sections = ['molarityFields', 'soluteMassFields', 'dilutionFields'];
+            sections.forEach(section => document.getElementById(section).classList.add('hidden'));
+            if (this.value) document.getElementById(`${this.value}Fields`).classList.remove('hidden');
+        });
+  
+        function calculateMolarity() {
+        // Get input values
+            const mass = parseFloat(document.getElementById('mass').value) || null;
+            const concentration = parseFloat(document.getElementById('concentration').value) || null;
+            const volume = parseFloat(document.getElementById('volume').value) || null;
+            const molWeight = parseFloat(document.getElementById('molWeight').value) || null;
+
+        // Check which field is empty and calculate accordingly
+            if (!mass && concentration && volume && molWeight) {
+        // Calculate Mass
+        document.getElementById('mass').value = (concentration * volume * molWeight).toFixed(4);
+            } else if (mass && !concentration && volume && molWeight) {
+        // Calculate Concentration
+        document.getElementById('concentration').value = (mass / (volume * molWeight)).toFixed(4);
+            } else if (mass && concentration && !volume && molWeight) {
+        // Calculate Volume
+        document.getElementById('volume').value = (mass / (concentration * molWeight)).toFixed(4);
+            } else if (mass && concentration && volume && !molWeight) {
+        // Calculate Molecular Weight
+        document.getElementById('molWeight').value = (mass / (concentration * volume)).toFixed(4);
+            } else {
+        alert("Please fill in all fields except the one you want to calculate.");
+        }}
+</script>
+
+    </script>
+
+    <!-- Styles for the Toggle Switch -->
+    <style>
+        /* Toggle switch styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 34px;
+            height: 20px;
+        }
+
+        .switch input { display: none; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 12px;
+            width: 12px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(14px);
+        }
+
+        /* Receipt placement styling */
+        #receipt-section {
+            position: relative;
+            min-width: 200px;
+        }
+    </style>
 </body>
 </html>
