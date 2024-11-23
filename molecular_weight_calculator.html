@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Molecular Weight Lookup</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="p-6 bg-gray-100 rounded-md shadow-md">
+        <h2 class="text-xl font-semibold mb-4">Molecular Weight Lookup</h2>
+        <form id="molecularWeightForm" class="space-y-4">
+            <label for="chemicalName" class="block font-semibold">Enter Chemical Name or Formula:</label>
+            <input
+                type="text"
+                id="chemicalName"
+                name="chemicalName"
+                class="w-full p-2 border border-gray-300 rounded-md"
+                placeholder="e.g., Glucose or C6H12O6"
+                required
+            />
+            <button
+                type="submit"
+                class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            >
+                Lookup
+            </button>
+        </form>
+        <div id="molecularWeightResult" class="mt-6 text-gray-800"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('molecularWeightForm');
+        const resultDiv = document.getElementById('molecularWeightResult');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const chemicalName = document.getElementById('chemicalName').value;
+
+            try {
+                resultDiv.innerHTML = 'Looking up...';
+                const response = await fetch(
+                    `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(
+                        chemicalName
+                    )}/property/MolecularWeight/JSON`
+                );
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch molecular weight.');
+                }
+
+                const data = await response.json();
+                const molecularWeight =
+                    data.PropertyTable.Properties[0].MolecularWeight;
+
+                resultDiv.innerHTML = `<p class="font-semibold">Molecular Weight: ${molecularWeight} g/mol</p>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="text-red-500">${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

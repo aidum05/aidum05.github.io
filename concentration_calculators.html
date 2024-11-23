@@ -4,132 +4,336 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Concentration Calculators</title>
+    <script src="conversion.js" defer></script>
+    <script src="unit_tests.js" defer></script>
+
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 p-6">
     <div class="flex space-x-8">
-        <!-- Toggleable Receipt Section -->
-        <div id="receipt-container"></div>
-
-        <div class="w-2/3">
-
-            <!-- Molarity Calculation Type Selector -->
-            <div class="mb-4">
-                <label for="calcType" class="block font-semibold">Calculation Type:</label>
-                <select id="calcType" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" onchange="updateFieldsBasedOnCalcType(this.value)">
-                    <option value="">Please select</option>
-                    <option value="molarity">Calculate Molarity</option>
-                    <option value="solute_mass">Calculate Mass of Solute</option>
-                    <option value="dilution">Dilution of Stock Solution</option>
-                </select>
+        <!-- Receipt Section -->
+        <div class="w-1/3 p-4 bg-gray-50 rounded-md shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Calculation Receipt</h2>
+            <div id="receipt" class="space-y-2 text-sm text-gray-700">
+                <!-- Receipt dynamically updated here -->
             </div>
+        </div>
 
-            <!-- Input Fields for Calculations -->
-            <div id="molarityFields" class="space-y-4 max-w-md mx-auto p-4 bg-white shadow-md rounded-md hidden">
-                <!-- Add fields for molarity calculation -->
-            </div>
-            <div id="soluteMassFields" class="hidden">
-                <!-- Add fields for solute mass calculation -->
-            </div>
-            <div id="dilutionFields" class="hidden">
-                <!-- Add fields for dilution calculation -->
-            </div>
+        <!-- Main Calculator Section -->
+        <div class="mb-4">
+            <label for="calculationType" class="block font-semibold mb-2">Select Calculator:</label>
+            <select id="calculationType" class="border rounded w-full p-2" onchange="displayInputs()">
+                <option value="" selected>Please Select</option>
+                <option value="molarity">Molarity Calculator</option>
+                <option value="dilution">Dilution Calculator</option>
+                <option value="molecularWeight">Molecular Weight Lookup</option>
+            </select>
+        </div>
+        
 
-            <!-- Calculate Button -->
-            <div class="flex justify-end mt-4">
-                <button onclick="calculateMolarity()" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
-                    Calculate
-                </button>
-            </div>
-
-            <!-- Result Display -->
-            <div id="result" class="mt-4 p-4 bg-gray-200 rounded-md">
-                <strong>Result:</strong> <span id="resultOutput">0</span>
+            <!-- Input Fields Section -->
+            <div id="inputFields" class="p-4 bg-white rounded-md shadow-md hidden">
+                <!-- Dynamically updated input fields will appear here -->
             </div>
         </div>
     </div>
 
-    <!-- JavaScript -->
     <script>
-        async function loadReceipt() {
-            try {
-                const response = await fetch('receipt.html');
-                if (!response.ok) throw new Error('Failed to load receipt.html');
-                const receiptHTML = await response.text();
-                document.getElementById('receipt-container').innerHTML = receiptHTML;
-            } catch (error) {
-                console.error('Error loading receipt:', error);
-            }
-        }
+        // function displayInputs() {
+        //     const calculationType = document.getElementById("calculationType").value;
+        //     const inputFields = document.getElementById("inputFields");
+        //     inputFields.innerHTML = ""; // Clear previous inputs
+        //     inputFields.classList.add("hidden"); // Hide by default
 
-        // Load the receipt on page load
-        function updateFieldsBasedOnCalcType(calcType) {
-            const sections = ['molarityFields', 'soluteMassFields', 'dilutionFields'];
-            sections.forEach(section => document.getElementById(section).classList.add('hidden'));
-            if (calcType) document.getElementById(`${calcType}Fields`).classList.remove('hidden');
-        }
+        //     if (calculationType === "molarity") {
+        //         inputFields.innerHTML = `
+        //             <label for="mass" class="block font-semibold mb-2">Mass:</label>
+        //             <div class="flex mb-4">
+        //                 <input id="mass" type="number" class="border rounded w-full p-2" placeholder="Enter mass">
+        //                 <select id="massUnit" class="border rounded p-2 ml-2">
+        //                     <option value="g" selected>g</option>
+        //                     <option value="mg">mg</option>
+        //                     <option value="ug">µg</option>
+        //                     <option value="ng">ng</option>
+        //                 </select>
+        //             </div>
 
-        function updateReceipt() {
-            const mass = document.getElementById('mass').value || "N/A";
-            const concentration = document.getElementById('concentration').value || "N/A";
-            const volume = document.getElementById('volume').value || "N/A";
-            const molWeight = document.getElementById('molWeight').value || "N/A";
-            
-            const massUnitText = document.getElementById('massUnit').options[document.getElementById('massUnit').selectedIndex].text;
-            const volumeUnitText = document.getElementById('volumeUnit').options[document.getElementById('volumeUnit').selectedIndex].text;
-            
-            // Clear previous receipt
-            const receipt = document.getElementById('receipt');
-            receipt.innerHTML = ""; 
-            
-            // Add receipt entries
-            receipt.innerHTML += `<p>Mass: ${mass} ${massUnitText}</p>`;
-            receipt.innerHTML += `<p>Concentration: ${concentration} mol/L</p>`;
-            receipt.innerHTML += `<p>Volume: ${volume} ${volumeUnitText}</p>`;
-            receipt.innerHTML += `<p>Molecular Weight: ${molWeight} g/mol</p>`;
-        }
+        //             <label for="volume" class="block font-semibold mb-2">Volume:</label>
+        //             <div class="flex mb-4">
+        //                 <input id="volume" type="number" class="border rounded w-full p-2" placeholder="Enter volume">
+        //                 <select id="volumeUnit" class="border rounded p-2 ml-2">
+        //                     <option value="L" selected>L</option>
+        //                     <option value="mL">mL</option>
+        //                     <option value="uL">µL</option>
+        //                 </select>
+        //             </div>
+
+        //             <label for="molecularWeight" class="block font-semibold mb-2">Molecular Weight:</label>
+        //             <div class="flex mb-4">
+        //                 <input id="molecularWeight" type="number" class="border rounded w-full p-2" placeholder="Enter molecular weight">
+        //                 <select id="molecularWeightUnit" class="border rounded p-2 ml-2">
+        //                     <option value="g/mol" selected>g/mol</option>
+        //                 </select>
+        //             </div>
+
+        //             <button class="bg-blue-500 text-white px-4 py-2 rounded" onclick="calculateMolarity()">Calculate</button>
+        //         `;
+        //         inputFields.classList.remove("hidden");
+        //     } else if (calculationType === "dilution") {
+        //         inputFields.innerHTML = `
+        //             <label for="stockConcentration" class="block font-semibold mb-2">Stock Concentration:</label>
+        //             <div class="flex mb-4">
+        //                 <input id="stockConcentration" type="number" class="border rounded w-full p-2" placeholder="Enter stock concentration">
+        //                 <select id="stockConcentrationUnit" class="border rounded p-2 ml-2">
+        //                     <option value="M" selected>M</option>
+        //                     <option value="mM">mM</option>
+        //                     <option value="uM">µM</option>
+        //                     <option value="nM">nM</option>
+        //                 </select>
+        //             </div>
+
+        //             <label for="desiredConcentration" class="block font-semibold mb-2">Desired Concentration:</label>
+        //             <div class="flex mb-4">
+        //                 <input id="desiredConcentration" type="number" class="border rounded w-full p-2" placeholder="Enter desired concentration">
+        //                 <select id="desiredConcentrationUnit" class="border rounded p-2 ml-2">
+        //                     <option value="M" selected>M</option>
+        //                     <option value="mM">mM</option>
+        //                     <option value="uM">µM</option>
+        //                     <option value="nM">nM</option>
+        //                 </select>
+        //             </div>
+
+        //             <label for="volume" class="block font-semibold mb-2">Final Volume:</label>
+        //             <div class="flex mb-4">
+        //                 <input id="volume" type="number" class="border rounded w-full p-2" placeholder="Enter final volume">
+        //                 <select id="volumeUnit" class="border rounded p-2 ml-2">
+        //                     <option value="L" selected>L</option>
+        //                     <option value="mL">mL</option>
+        //                     <option value="uL">µL</option>
+        //                 </select>
+        //             </div>
+
+        //             <button class="bg-blue-500 text-white px-4 py-2 rounded" onclick="calculateDilution()">Calculate</button>
+        //         `;
+        //         inputFields.classList.remove("hidden");
+        //     }
+        // }
 
         function calculateMolarity() {
-            // Your calculation function as is
-            updateReceipt();  // Update receipt after calculation
+    const mass = parseFloat(document.getElementById("mass").value) || 0;
+    const volume = parseFloat(document.getElementById("volume").value) || 1;
+    const molecularWeight = parseFloat(document.getElementById("molecularWeight").value) || 1;
+
+    const massUnit = document.getElementById("massUnit").value;
+    const volumeUnit = document.getElementById("volumeUnit").value;
+
+    // Convert mass and volume to base units (grams and liters)
+    const massInGrams = convertUnits(mass, massUnit, "g");
+    const volumeInLiters = convertUnits(volume, volumeUnit, "L");
+
+    // Calculate molarity in base unit (Moles)
+    let molarity = massInGrams / (molecularWeight * volumeInLiters);
+
+    // Determine the appropriate unit dynamically
+    let unit = "M"; // Default to Moles
+    if (molarity < 1 && molarity >= 1e-3) {
+        molarity *= 1e3;
+        unit = "mM"; // Millimoles
+    } else if (molarity < 1e-3 && molarity >= 1e-6) {
+        molarity *= 1e6;
+        unit = "µM"; // Micromoles
+    } else if (molarity < 1e-6) {
+        molarity *= 1e9;
+        unit = "nM"; // Nanomoles
+    }
+
+    // Format result to 2 decimal places
+    molarity = molarity.toFixed(2);
+
+    // Update receipt with calculated molarity and unit
+    const receipt = document.getElementById("receipt");
+    receipt.innerHTML = `
+        <p><strong>Molarity:</strong> ${molarity} ${unit}</p>
+        <p>Mass: ${mass} ${massUnit}</p>
+        <p>Volume: ${volume} ${volumeUnit}</p>
+        <p>Molecular Weight: ${molecularWeight} g/mol</p>
+    `;
+}
+
+// Unit Conversion Logic (Keep this in a separate script file if already defined)
+function convertUnits(value, fromUnit, toUnit) {
+    const conversionFactors = {
+        // Define conversion factors for mass
+        g: 1,
+        mg: 1000,
+        µg: 1e6,
+        ng: 1e9,
+
+        // Define conversion factors for volume
+        L: 1,
+        mL: 1000,
+        µL: 1e6,
+
+        // Define conversion factors for molarity (if needed for future extensions)
+        M: 1,
+        mM: 1000,
+        µM: 1e6,
+        nM: 1e9,
+    };
+
+    // Convert to base unit (e.g., grams or liters) then to target unit
+    return (value * conversionFactors[fromUnit]) / conversionFactors[toUnit];
+}
+
+
+        function displayInputs() {
+        const calculationType = document.getElementById("calculationType").value;
+        const inputFields = document.getElementById("inputFields");
+        inputFields.innerHTML = ""; // Clear previous inputs
+        inputFields.classList.add("hidden"); // Hide by default
+
+        if (calculationType === "molecularWeight") {
+            // Dynamically load the molecular weight calculator
+            fetch('molecular_weight_calculator.html')
+                .then((response) => response.text())
+                .then((html) => {
+                    inputFields.innerHTML = html;
+                    inputFields.classList.remove("hidden");
+                })
+                .catch((error) => console.error('Error loading Molecular Weight Calculator:', error));
+        } else if (calculationType === "molarity") {
+            inputFields.innerHTML = `
+                <label for="mass" class="block font-semibold mb-2">Mass (g):</label>
+                <input id="mass" type="number" class="border rounded w-full p-2 mb-4" placeholder="Enter mass">
+
+                <label for="volume" class="block font-semibold mb-2">Volume (L):</label>
+                <input id="volume" type="number" class="border rounded w-full p-2 mb-4" placeholder="Enter volume">
+
+                <label for="molecularWeight" class="block font-semibold mb-2">Molecular Weight (g/mol):</label>
+                <input id="molecularWeight" type="number" class="border rounded w-full p-2 mb-4" placeholder="Enter molecular weight">
+
+                <button class="bg-blue-500 text-white px-4 py-2 rounded" onclick="calculateMolarity()">Calculate</button>
+            `;
+            inputFields.classList.remove("hidden");
+        } else if (calculationType === "dilution") {
+            inputFields.innerHTML = `
+                <label for="stockConcentration" class="block font-semibold mb-2">Stock Concentration (M):</label>
+                <input id="stockConcentration" type="number" class="border rounded w-full p-2 mb-4" placeholder="Enter stock concentration">
+
+                <label for="desiredConcentration" class="block font-semibold mb-2">Desired Concentration (M):</label>
+                <input id="desiredConcentration" type="number" class="border rounded w-full p-2 mb-4" placeholder="Enter desired concentration">
+
+                <label for="volume" class="block font-semibold mb-2">Final Volume (L):</label>
+                <input id="volume" type="number" class="border rounded w-full p-2 mb-4" placeholder="Enter final volume">
+
+                <button class="bg-blue-500 text-white px-4 py-2 rounded" onclick="calculateDilution()">Calculate</button>
+            `;
+            inputFields.classList.remove("hidden");
+        }
+    }
+    function displayInputs() {
+    const calculationType = document.getElementById("calculationType").value;
+    const inputFields = document.getElementById("inputFields");
+    inputFields.innerHTML = ""; // Clear previous inputs
+    inputFields.classList.add("hidden"); // Hide by default
+
+    if (calculationType === "molecularWeight") {
+        fetch('molecular_weight_calculator.html')
+            .then((response) => response.text())
+            .then((html) => {
+                inputFields.innerHTML = html;
+                inputFields.classList.remove("hidden");
+                const form = document.getElementById("molecularWeightForm");
+                const resultDiv = document.getElementById("molecularWeightResult");
+                form.addEventListener("submit", async (event) => {
+                    event.preventDefault();
+                    const chemicalName = document.getElementById("chemicalName").value;
+                    try {
+                        resultDiv.innerHTML = "Looking up...";
+                        const response = await fetch(
+                            `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(
+                                chemicalName
+                            )}/property/MolecularWeight/JSON`
+                        );
+                        if (!response.ok) throw new Error("Failed to fetch molecular weight.");
+                        const data = await response.json();
+                        const molecularWeight = data.PropertyTable.Properties[0].MolecularWeight;
+                        resultDiv.innerHTML = `<p class="font-semibold">Molecular Weight: ${molecularWeight} g/mol</p>`;
+                    } catch (error) {
+                        resultDiv.innerHTML = `<p class="text-red-500">${error.message}</p>`;
+                    }
+                });
+            })
+            .catch((error) => console.error("Error loading Molecular Weight Calculator:", error));
+    } else if (calculationType === "molarity") {
+        inputFields.innerHTML = `
+            <label for="mass" class="block font-semibold mb-2">Mass:</label>
+            <div class="flex mb-4">
+                <input id="mass" type="number" class="border rounded w-full p-2" placeholder="Enter mass">
+                <select id="massUnit" class="border rounded p-2 ml-2">
+                    <option value="g" selected>g</option>
+                    <option value="mg">mg</option>
+                    <option value="ug">µg</option>
+                    <option value="ng">ng</option>
+                </select>
+            </div>
+            <label for="volume" class="block font-semibold mb-2">Volume:</label>
+            <div class="flex mb-4">
+                <input id="volume" type="number" class="border rounded w-full p-2" placeholder="Enter volume">
+                <select id="volumeUnit" class="border rounded p-2 ml-2">
+                    <option value="L" selected>L</option>
+                    <option value="mL">mL</option>
+                    <option value="uL">µL</option>
+                </select>
+            </div>
+            <label for="molecularWeight" class="block font-semibold mb-2">Molecular Weight:</label>
+            <input id="molecularWeight" type="number" class="border rounded w-full p-2 mb-4" placeholder="Enter molecular weight">
+            <button class="bg-blue-500 text-white px-4 py-2 rounded" onclick="calculateMolarity()">Calculate</button>
+        `;
+        inputFields.classList.remove("hidden");
+    } else if (calculationType === "dilution") {
+        inputFields.innerHTML = `
+            <label for="stockConcentration" class="block font-semibold mb-2">Stock Concentration:</label>
+            <div class="flex mb-4">
+                <input id="stockConcentration" type="number" class="border rounded w-full p-2" placeholder="Enter stock concentration">
+                <select id="stockConcentrationUnit" class="border rounded p-2 ml-2">
+                    <option value="M" selected>M</option>
+                    <option value="mM">mM</option>
+                    <option value="uM">µM</option>
+                    <option value="nM">nM</option>
+                </select>
+            </div>
+            <label for="desiredConcentration" class="block font-semibold mb-2">Desired Concentration:</label>
+            <input id="desiredConcentration" type="number" class="border rounded w-full p-2 mb-4" placeholder="Enter desired concentration">
+            <label for="volume" class="block font-semibold mb-2">Final Volume:</label>
+            <input id="volume" type="number" class="border rounded w-full p-2 mb-4" placeholder="Enter final volume">
+            <button class="bg-blue-500 text-white px-4 py-2 rounded" onclick="calculateDilution()">Calculate</button>
+        `;
+        inputFields.classList.remove("hidden");
+    }
+}
+
+        function calculateDilution() {
+            const stockConcentration = parseFloat(document.getElementById("stockConcentration").value);
+            const stockConcentrationUnit = document.getElementById("stockConcentrationUnit").value;
+            const desiredConcentration = parseFloat(document.getElementById("desiredConcentration").value);
+            const desiredConcentrationUnit = document.getElementById("desiredConcentrationUnit").value;
+            const volume = parseFloat(document.getElementById("volume").value);
+            const volumeUnit = document.getElementById("volumeUnit").value;
+
+            const convertedStock = convertUnits(stockConcentration, stockConcentrationUnit, "M");
+            const convertedDesired = convertUnits(desiredConcentration, desiredConcentrationUnit, "M");
+            const convertedVolume = convertUnits(volume, volumeUnit, "L");
+            const volumeToAdd = (convertedVolume * convertedDesired / convertedStock).toFixed(2);
+
+            const receipt = document.getElementById("receipt");
+            receipt.innerHTML = `
+                <p><strong>Volume to Add:</strong> ${volumeToAdd} L</p>
+                <p>Stock Concentration: ${convertedStock} M</p>
+                <p>Desired Concentration: ${convertedDesired} M</p>
+                <p>Final Volume: ${convertedVolume} L</p>
+            `;
         }
     </script>
-
-    <!-- Styles for the Toggle Switch -->
-    <style>
-        /* Toggle switch styling */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 34px;
-            height: 20px;
-        }
-        .switch input { display: none; }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 12px;
-            width: 12px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
-            background-color: #4CAF50;
-        }
-        input:checked + .slider:before {
-            transform: translateX(14px);
-        }
-    </style>
 </body>
 </html>

@@ -1,0 +1,33 @@
+    <!-- 
+    ==========================
+    Design Guidelines:
+    ==========================
+    1. User Experience (UX):
+       - Minimalist, intuitive UI designed for common laboratory workflows.
+       - Mobile and desktop compatibility with consistent styling (Tailwind CSS).
+       - Flexible workflows with basic inputs.
+
+    2. Maintainability:
+       - Modular design for better readability and reusability (e.g., separate unit handling, form rendering, logic).
+       - Test new features before integration.
+
+    3. Free Hosting:
+       - All pages work seamlessly on GitHub Pages.
+
+    4. Receipt System:
+       - Always visible, displays inputs, intermediate steps, and final results with units.
+       - Dynamically cleared between calculations.
+
+    5. Unit Handling:
+       - Account for units in all calculators (mass, volume, concentration, etc.).
+       - Separate file/module for unit handling (`unit_conversion.js`).
+
+    6. Modular Expandability:
+       - Easy addition of calculators without breaking existing functionality.
+       - Consistent form layout for all calculators.
+
+    7. Future Features:
+       - Integrate APIs or libraries for advanced functionality.
+       - User requests for new calculators via a dedicated page.
+       - Add support for advanced calculations.
+    -->

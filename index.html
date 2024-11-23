@@ -1,24 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laboratory Calculators</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Lab Calculators</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="container mx-auto p-8 text-center">
-        <h1 class="text-4xl font-bold mb-8">Welcome to Laboratory Calculators</h1>
-        <p class="mb-6 text-lg text-gray-700">Choose a calculator below to begin.</p>
-        
-        <div class="flex flex-col sm:flex-row justify-center gap-6">
-            <a href="concentration_calculators.html" class="bg-blue-500 text-white px-6 py-4 rounded-lg shadow hover:bg-blue-600 transition">
-                Concentration Calculators
-            </a>
-            <a href="dilution_calculator.html" class="bg-green-500 text-white px-6 py-4 rounded-lg shadow hover:bg-green-600 transition">
-                Dilution Calculator
-            </a>
+
+<body class="bg-gray-100 text-gray-800">
+    <header class="bg-blue-600 text-white py-4">
+        <div class="container mx-auto text-center">
+            <h1 class="text-3xl font-bold">Welcome to Lab Calculators</h1>
         </div>
-    </div>
+    </header>
+
+    <main class="container mx-auto mt-12 px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
+            <!-- Request a Calculator Section -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4">Request a New Calculator</h2>
+                <p class="mb-6">
+                    Have a specific workflow or calculation you need? Let us know, and we'll create it for you!
+                </p>
+                <a href="request_calculator.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700">
+                    Request Calculator
+                </a>
+            </div>
+
+            <!-- Go to Calculators Section -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4">Explore Existing Calculators</h2>
+                <p class="mb-6">
+                    Access our collection of calculators designed for lab workflows.
+                </p>
+                <a href="concentration_calculators.html" class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700">
+                    Go to Calculators
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4 mt-12">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Lab Calculators. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
+
 </html>

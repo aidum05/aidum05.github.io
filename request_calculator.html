@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request a Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white py-4">
+        <div class="container mx-auto text-center">
+            <h1 class="text-3xl font-bold">Request a Calculator</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto mt-12 px-4 space-y-12">
+        <!-- Current Requests Section -->
+        <section>
+            <h2 class="text-xl font-bold mb-4">Current Requests</h2>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <ul id="current-requests" class="space-y-2">
+                    <li>1. Molarity calculator for large volumes</li>
+                    <li>2. Dilution calculator for serial dilutions</li>
+                    <li>3. Temperature conversion with scientific units</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Request Form Section -->
+        <section>
+            <h2 class="text-xl font-bold mb-4">Submit a New Request</h2>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <form id="request-form" onsubmit="handleRequest(event)" class="space-y-4">
+                    <!-- Name -->
+                    <div>
+                        <label for="name" class="block font-semibold mb-1">Your Name</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="w-full p-2 border rounded-md"
+                            placeholder="Enter your name"
+                            required>
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block font-semibold mb-1">Your Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="w-full p-2 border rounded-md"
+                            placeholder="Enter your email"
+                            required>
+                    </div>
+
+                    <!-- Request Details -->
+                    <div>
+                        <label for="request" class="block font-semibold mb-1">Calculator Request</label>
+                        <textarea
+                            id="request"
+                            name="request"
+                            class="w-full p-2 border rounded-md"
+                            rows="4"
+                            placeholder="Describe the calculator you need..."
+                            required></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div>
+                        <button
+                            type="submit"
+                            class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+                            Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4 mt-12">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Lab Calculators. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Handle request form submission
+        function handleRequest(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const request = document.getElementById('request').value;
+
+            const currentRequests = document.getElementById('current-requests');
+            const newRequest = document.createElement('li');
+            newRequest.textContent = `${currentRequests.children.length + 1}. ${request} (Submitted by: ${name})`;
+
+            currentRequests.appendChild(newRequest);
+
+            // Clear the form
+            event.target.reset();
+
+            alert("Thank you! Your request has been submitted.");
+        }
+    </script>
+</body>
+
+</html>
